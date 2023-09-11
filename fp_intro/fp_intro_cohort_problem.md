@@ -179,6 +179,7 @@ $$
 $$
 
 and free variable extended
+
 $$
 \begin{array}{rcl}
 fv(x) & = & \{x\}\\
@@ -208,6 +209,7 @@ $$
   \lbrack t_1 / x \rbrack \mu f.t_2 & = & \mu f.\lbrack t_1 / x \rbrack t_2 & {\tt if}\  f\neq x\  {\tt and}\  f \not \in fv(t_1) 
 \end{array}
 $$
+
 # Exercise 5
 
 Evaluate the following lambda term
