@@ -196,6 +196,7 @@ and substitution extended
 
 $$
 \begin{array}{rcll}
+ \lbrack t_1 / x \rbrack c & = & c \\ 
  \lbrack t_1 / x \rbrack x & = & t_1 \\
  \lbrack t_1 / x \rbrack y & = & y & {\tt if}\  x \neq y \\
  \lbrack t_1 / x \rbrack (t_2\ t_3) & = & \lbrack t_1 / x \rbrack t_2\ 
@@ -204,8 +205,7 @@ $$
  \rbrack t_2 & {\tt if}\  y\neq x\  {\tt and}\  y \not \in fv(t_1) \\ 
  \lbrack t_1 / x \rbrack let\ y = t_2\ in\ t_3 & = & let\ y = \lbrack t_1 / x \rbrack t_2\ in\ \lbrack t_1 / x \rbrack t_3 & {\tt if}\  y\neq x\  {\tt and}\  y \not \in fv(t_1) \\ 
   \lbrack t_1 / x \rbrack if\ t_2\ then\ t_3\ else\ t_4 & = & if\ \lbrack t_1 / x \rbrack t_2\ then\ \lbrack t_1 / x \rbrack t_3\ else\ \lbrack t_1 / x \rbrack t_4 \\ 
-  \lbrack t_1 / x \rbrack \mu f.t_2 & = & \mu f.\lbrack t_1 / x \rbrack t_2 & {\tt if}\  f\neq x\  {\tt and}\  f \not \in fv(t_1) \\ 
-
+  \lbrack t_1 / x \rbrack \mu f.t_2 & = & \mu f.\lbrack t_1 / x \rbrack t_2 & {\tt if}\  f\neq x\  {\tt and}\  f \not \in fv(t_1) 
 \end{array}
 $$
 # Exercise 5
