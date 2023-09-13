@@ -197,6 +197,7 @@ and substitution extended
 
 $$
 \begin{array}{rcll}
+ \lbrack t_1 / x \rbrack c & = & c \\ 
  \lbrack t_1 / x \rbrack x & = & t_1 \\
  \lbrack t_1 / x \rbrack y & = & y & {\tt if}\  x \neq y \\
  \lbrack t_1 / x \rbrack (t_2\ t_3) & = & \lbrack t_1 / x \rbrack t_2\ 
