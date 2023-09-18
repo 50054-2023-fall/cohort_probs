@@ -6,7 +6,7 @@ import sutd.compiler.Ex3.*
 
 class TestEx3 extends funsuite.AnyFunSuite {
     test("test ex3: lift(List(1,2,3)) == List(List(1), List(2), List(3))") {
-        val result = llift(List(1,2,3))
+        val result = lift(List(1,2,3))
         val expected = List(List(1), List(2), List(3))
         assert(result == expected)
     }
