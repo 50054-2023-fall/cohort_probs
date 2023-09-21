@@ -12,7 +12,7 @@ class TestEx1 extends funsuite.AnyFunSuite {
     }
     test("test ex1: fib(5) == 8") {
         val result = fib(5)
-        val expected = 18
+        val expected = 8
         assert(result == expected)
     }
     test("test ex1: fib(10) == 89") {
