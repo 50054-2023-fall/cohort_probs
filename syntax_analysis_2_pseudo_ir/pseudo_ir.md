@@ -58,9 +58,9 @@ $$
 $$
 \begin{array}{rc}
 {\tt (mReturn)} & \begin{array}{c}
-     G_a(r_{ret})(E) \vdash lis \ \ l\ {\tt is\ a\ fresh\ label} \\
+     G_a(r_{ret})(X) \vdash lis \ \ l\ {\tt is\ a\ fresh\ label} \\
      \hline
-     G_s(return\ E) \vdash lis + [ l: ret ]
+     G_s(return\ X) \vdash lis + [ l: ret ]
      \end{array}
 \end{array}
 $$
@@ -300,9 +300,9 @@ $$
 $$
 \begin{array}{rc}
 {\tt (m2Return)} & \begin{array}{c}
-     G_e(E) \vdash (\^{e}, \v{e}) \ \ l_1, l_2\ {\tt are\ fresh\ labels} \\
+     G_e(X) \vdash (\^{e}, \v{e}) \ \ l_1, l_2\ {\tt are\ fresh\ labels} \\
      \hline
-     G_s(return\ E) \vdash \v{e} + [ l_1 : r_{ret} \leftarrow \^{e},  l_2: ret ]
+     G_s(return\ X) \vdash \v{e} + [ l_1 : r_{ret} \leftarrow \^{e},  l_2: ret ]
      \end{array} 
 \end{array}
 $$
