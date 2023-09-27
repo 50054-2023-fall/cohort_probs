@@ -3,16 +3,16 @@
 
 # Learning Outcome
 
-By this end of this lesson, you should be able to 
+By this end of this lesson, you should be able to:
 
-* develop parametrically polymorphic Scala code using Generic, Algebraic Datatype
-* safely mix parametric polymoprhism with adhoc polymoprhism (overloading) using type classes 
+* develop parametrically polymorphic Scala code using Generic, Algebraic Datatype.
+* safely mix parametric polymorphism with adhoc polymorphism (overloading) using type classes.
 * develop generic programming style code using `Functor` type class.
-* make use of `Option` and `Either` to handle and manipulate errors and exceptions. 
+* make use of `Option` and `Either` to handle and manipulate errors and exceptions.
 
 # Exercise 1
 
-Consider the following built-in type class 
+Consider the following built-in type class:
 
 ```scala
 trait Ordering[A] { 
@@ -20,7 +20,7 @@ trait Ordering[A] {
 }
 ```
 
-We can define a type class instance for ordering among interger values.
+We can define a type class instance for ordering among integer values.
 
 ```scala
 given intOrd:Ordering[Int] = new Ordering[Int] {
@@ -110,17 +110,17 @@ Test cases:
 
 ```scala
 val l = List(1,2,3,4)
-assert(listFoldable.foldLeft(l)(0)(x:Int,y:Int) => x - y) == -10)
+assert(listFoldable.foldLeft(l)(0)((x:Int,y:Int) => x - y) == -10)
 // (((0-1)-2)-3)-4
-assert(listFoldable.foldRight(l)(0)(x:Int,y:Int) => x - y) == -2)
+assert(listFoldable.foldRight(l)(0)((x:Int,y:Int) => x - y) == -2)
 // 1-(2-(3-(4-0)))
 
 import BST.*
 val b = Node(5, Node(3, Node(1, Empty, Empty), Node(4,Empty, Empty)), Node(7, Empty, Empty))
 
-assert(bstFoldable.foldLeft(b)("")(x:String, y:Int) => x + " " + y.toString)  == " 5 3 1 4 7")
+assert(bstFoldable.foldLeft(b)("")((x:String, y:Int) => x + " " + y.toString)  == " 5 3 1 4 7")
 // C-L-R in order
-assert(bstFoldable.foldRight(b)("")(x:Int, y:String) => x.toString + " " + y)  == "5 7 3 4 1 ")
+assert(bstFoldable.foldRight(b)("")((x:Int, y:String) => x.toString + " " + y)  == "5 7 3 4 1 ")
 
 // C-R-L order
 ```

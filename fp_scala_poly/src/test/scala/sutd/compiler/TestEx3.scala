@@ -1,8 +1,9 @@
 package sutd.compiler
-
+import scala.language.adhocExtensions
 import org.scalatest.funsuite
 import org.scalatest.matchers
 import sutd.compiler.Ex3.*
+import sutd.compiler.Ex3.BST.*
 
 class TestEx3 extends funsuite.AnyFunSuite {
     test("test ex3: insert(3, Empty) == Node(3,Empty,Empty) and insert(5, Node(3, Empty, Empty)) == Node(3, Empty, Node(5, Empty, Empty))") {

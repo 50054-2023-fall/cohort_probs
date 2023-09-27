@@ -1,8 +1,8 @@
 package sutd.compiler
-
+import scala.language.adhocExtensions
 import org.scalatest.funsuite
 import org.scalatest.matchers
-import sutd.compiler.Ex1.*
+import sutd.compiler.Ex1.{given, *}
 
 class TestEx1 extends funsuite.AnyFunSuite {
     test("test ex1: booleanOrd.compare(true, false) == -1") {

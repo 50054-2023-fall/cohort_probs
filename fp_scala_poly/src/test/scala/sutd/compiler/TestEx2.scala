@@ -1,5 +1,5 @@
 package sutd.compiler
-
+import scala.language.adhocExtensions
 import org.scalatest.funsuite
 import org.scalatest.matchers
 import sutd.compiler.Ex2.*
