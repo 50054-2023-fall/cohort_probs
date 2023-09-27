@@ -13,6 +13,7 @@ class TestEx3 extends funsuite.AnyFunSuite {
         assert(t1 == Node(3,Empty, Node(5, Empty, Empty)))
     }
     test("test ex3: insert(false, insert(false, insert(true, insert(true, Empty)))) == Node(true, Empty, Node(false, Empty, Empty))") {
+        import  Ex1.{given, *}
         val t2 = insert(true, Empty)
         val t3 = insert(false, insert(true, t2))
         assert(t3 == Node(true, Empty, Node(false, Empty, Empty)))
