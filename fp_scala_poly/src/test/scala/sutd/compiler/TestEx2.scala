@@ -11,6 +11,7 @@ class TestEx2 extends funsuite.AnyFunSuite {
         assert(result == expected)
     }
     test("test ex2: qsort(List(false, false, true)) == List(true, false, false)") {
+        import sutd.compiler.Ex1.{given, *}
         val result = qsort(List(false, false, true))
         val expected = List(true, false, false)
         assert(result == expected)
