@@ -71,13 +71,6 @@ trait MkMonad[S] extends Monad[MkM[S]] {
 ## Exercise 6
 
 
-Consider the following code
-
-```scala
-enum BTree[+A] {
-    case Empty
-    case Node(v:A, lft:BTree[A], rght:BTree[A])
-}
 
 Consider the following code
 
