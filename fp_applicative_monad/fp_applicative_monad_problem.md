@@ -1,7 +1,7 @@
-% Applicative and Monad
+# 50.054 - Applicative and Monad
 
 
-# Learning Outcomes
+## Learning Outcomes
 
 
 
@@ -11,7 +11,7 @@
 4. Apply Monad to in design and develop highly modular and resusable software.
 
 
-# Exercise 1 
+## Exercise 1 
 
 
 Define the type class instance `Functor[Option]`. Then verify that it satisfies the Functor Laws.
@@ -19,7 +19,7 @@ Define the type class instance `Functor[Option]`. Then verify that it satisfies 
 
 
 
-# Exercise 2
+## Exercise 2
 
 Given the following type lambda of a pair type.
 ```scala
@@ -32,12 +32,12 @@ Define the functor of instance of `Functor[PP[C]]`.
 
 
 
-# Exercise 3
+## Exercise 3
 
 Show that for all Applicative instance $a$ satisfying the Applicative Laws implies that $a$ satisfies the Functor Laws.
 
 
-# Exercise 4
+## Exercise 4
 
 Consider the following data type, complete the implementation of `map` and `flatMap`.
 
@@ -50,7 +50,7 @@ case class Mk[S,A]( f : (S =>(S, Option[A]) )) {
 
 
 
-# Exercise 5
+## Exercise 5
 
 Continue from the previouse quesiton, 
 
@@ -68,7 +68,7 @@ trait MkMonad[S] extends Monad[MkM[S]] {
 
 
 
-# Exercise 6
+## Exercise 6
 
 
 Consider the following code
@@ -79,15 +79,29 @@ enum BTree[+A] {
     case Node(v:A, lft:BTree[A], rght:BTree[A])
 }
 
+Consider the following code
+
+```scala
+enum BTree[+A] {
+    case Empty
+    case Node(v:A, lft:BTree[A], rght:BTree[A])
+}
+
+import BTree.*;
+
+val tree = Node(5, Node(3, Node(1, Empty, Empty), Node(4, Empty, Empty)), Empty)
 
 ```
-
-TODO: use reader monad to print the tree?
+Use reader monad to print the tree `tree` as
 
 ```
-    4
-  2
-1   5
-  3
-
+5
+    3
+        1
+            <empty>
+            <empty>
+        4
+            <empty>
+            <empty>
+    <empty>
 ```
