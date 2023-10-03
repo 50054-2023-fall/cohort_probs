@@ -26,10 +26,17 @@ Given the following type lambda of a pair type.
 type PP = [B] =>> [A] =>> (A,B)
 ```
 
-Define the functor of instance of `Functor[PP[C]]`.
+Define the functor of instance of `Functor[PP[C]]` called `pairFunctor`.
 
 
+### Test Cases
 
+```scala
+val pair = (1, "A")
+val expected = (2, "A")
+val result = pairFunctor.map(pair)(x => x + 1)
+assert(expected == result)
+```
 
 
 ## Exercise 3
@@ -48,7 +55,23 @@ case class Mk[S,A]( f : (S =>(S, Option[A]) )) {
 }
 ```
 
+### Test Cases
 
+```scala
+val m = Mk( s => (s, Some(1)) )
+val result:Option[Int] = runMk(m.map( x => x + 1))(()) 
+val expected:Option[Int] = Some(2)
+assert(expected == result)
+```
+
+```scala
+val m = Mk( s => (s, Some(1)) )
+val result:Option[Int] = runMk(m.flatMap( x => Mk(s => (s,Some(x + 1)))))(())
+val expected:Option[Int] = Some(2)
+assert(expected == result)
+```
+
+For more test cases, refer to the project test folder
 
 ## Exercise 5
 
@@ -66,7 +89,30 @@ trait MkMonad[S] extends Monad[MkM[S]] {
 }
 ```
 
+### Test Cases
 
+Let 
+```scala
+def runMk[S,A](mk:Mk[S,A])(s:S):Option[A] = mk match {
+    case Mk(f) => f(s) match {
+        case (_,o) => o
+    }
+}
+```
+
+```scala
+given mkMonadInt:MkMonad[Int] = new MkMonad[Int]{} 
+def incrState(using i:MkMonad[Int]):Mk[Int,Int] = for {
+    x <- i.get
+    _ <- i.set(x+1)
+    y <- i.get
+} yield y
+val result:Option[Int] = runMk(incrState)(1)
+val expected:Option[Int] = Some(2)
+assert(expected == result)
+```
+
+For more test cases, refer to the project test folder
 
 ## Exercise 6
 
@@ -85,7 +131,7 @@ import BTree.*;
 val tree = Node(5, Node(3, Node(1, Empty, Empty), Node(4, Empty, Empty)), Empty)
 
 ```
-Use reader monad to print the tree `tree` as
+Define a function `rmPrint` which uses a reader monad to print the tree `tree` as
 
 ```
 5
@@ -97,4 +143,26 @@ Use reader monad to print the tree `tree` as
             <empty>
             <empty>
     <empty>
+```
+
+### Test Cases
+
+
+```scala
+val tree = Node(5, Node(3, Node(1, Empty, Empty), Node(4, Empty, Empty)), Empty)
+val expected = """5
+3
+    1
+        <empty>
+        <empty>
+    4
+        <empty>
+        <empty>
+<empty>"""
+rmPrint(tree) match {
+    case Reader(run) => { 
+        val result = run(Env(0))
+        assert(expected == result)
+    }
+}   
 ```
