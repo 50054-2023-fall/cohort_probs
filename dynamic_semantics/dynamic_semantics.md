@@ -10,7 +10,7 @@
 
 Recall that small step operational semantics is to formally define the run-time behavior of a program in a step by step manner.
 
-Given the operational semantics as a specification, it is straight-forward to implement an interpretor. For instance the interpretor code for SIMP is given in the SIMP project template.
+Given the operational semantics as a specification, it is straight-forward to implement an interpreter. For instance the interpreter code for Pseudo Assembly is given in the SIMP project template.
 
 # Exercise 1 
 

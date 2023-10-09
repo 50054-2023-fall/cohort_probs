@@ -61,7 +61,7 @@ assert(qsort(List(false, false, true)) == List(true, false, false))
 
 # Exercise 3
 
-Given the following algebraic data type of a polymorphic binary search tree, and a type class `Ord`. 
+Given the following algebraic data type of a polymorphic binary search tree, and a type class `Ordering`. 
 
 ```scala
 enum BST[+A] {
