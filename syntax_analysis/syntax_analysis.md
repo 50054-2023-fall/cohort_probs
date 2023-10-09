@@ -1,7 +1,7 @@
-% syntax analysis
+# 50.054 - syntax analysis
 
 
-# Learning Outcome 
+## Learning Outcome 
 
 By the end of this class, you should be able to 
 
@@ -338,9 +338,9 @@ The `choice` combinator takes two parsers `p` and `q`. It tries to run `p`. In c
 
 Now we can make use of `choice` to define an `optional` combinator
 ```scala
-def optional[T, A](pa: Parser[T, A]): Parser[T, Either[A, Unit]] = {
-    val p1: Parser[T, Either[A, Unit]] = for (a <- pa) yield (Left(a))
-    val p2: Parser[T, Either[A, Unit]] = Parser(env => Ok((Right(()), env)))
+def optional[T, A](pa: Parser[T, A]): Parser[T, Either[Unit, A]] = {
+    val p1: Parser[T, Either[Unit, A]] = for (a <- pa) yield (Right(a))
+    val p2: Parser[T, Either[Unit, A]] = Parser(toks => Ok((Left(()), toks)))
     choice(p1)(p2)
 }
 ```
