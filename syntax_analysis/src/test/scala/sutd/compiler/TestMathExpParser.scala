@@ -2,6 +2,7 @@ package sutd.compiler
 
 import org.scalatest.funsuite 
 import org.scalatest.matchers
+import scala.language.adhocExtensions
 import sutd.compiler.MathExpToken.*
 import sutd.compiler.MathExpParser.*
 import sutd.compiler.BacktrackParsec.*

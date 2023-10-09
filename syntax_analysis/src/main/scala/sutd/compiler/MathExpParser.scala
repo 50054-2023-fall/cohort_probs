@@ -75,8 +75,8 @@ object MathExpParser {
     def parseTermP:Parser[LToken, TermLEP] = for {
         omt <- optional(parseMultTermP)
     } yield { omt match {
-        case Right(_) => Eps
-        case Left(t) => t
+        case Left(_) => Eps
+        case Right(t) => t
     }}
         
 
