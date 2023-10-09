@@ -30,16 +30,11 @@ object MathExpParser {
     /* after left recursion elimination
     E  ::= T + E
     E  ::= T
-    T  ::= FT'
+    T  ::= FT'     <-- left recursion eliminated
     T' ::= *FT'
     T' ::= epsilon
     F  ::=i
     */
-
-    enum ExpLE {
-        case TermExpLE(t:TermLE)
-        case PlusExpLE(t:TermLE, e:ExpLE) 
-    }
     
     case class TermLE(f:Factor, tp:TermLEP)
 
@@ -49,25 +44,30 @@ object MathExpParser {
     }
 
     import Exp.*
-    import ExpLE.*
     import Term.*
     import TermLEP.*
     import LToken.*
 
-    def parseExpLE:Parser[LToken, ExpLE] = 
-        choice(parsePlusExpLE)(parseTermExp)
+    def parseExp:Parser[LToken, Exp] = 
+        choice(parsePlusExp)(parseTermExp)
 
-    def parsePlusExpLE:Parser[LToken, ExpLE] = for {
+    def parsePlusExp:Parser[LToken, Exp] = for {
         t <- parseTerm
         plus <- parsePlusTok
-        e <- parseExpLE
-    } yield PlusExpLE(t, e)
+        e <- parseExp
+    } yield PlusExp(t, e)
 
-    def parseTermExp:Parser[LToken, ExpLE] = for {
+    def parseTermExp:Parser[LToken, Exp] = for {
         t <- parseTerm
-    } yield TermExpLE(t)
+    } yield TermExp(t)
 
-    def parseTerm:Parser[LToken, TermLE] = for {
+
+    def parseTerm:Parser[LToken, Term] = for {
+        tle <- parseTermLE
+    } yield fromTermLE(tle)
+
+
+    def parseTermLE:Parser[LToken, TermLE] = for {
         f <- parseFactor
         tp <- parseTermP 
     } yield TermLE(f, tp)
@@ -109,12 +109,6 @@ object MathExpParser {
         case IntTok(v) => true
         case _         => false
     })
-
-    // converting from ExpLE tro Exp
-    def fromExpLE(e:ExpLE):Exp = e match {
-        case TermExpLE(t) => TermExp(fromTermLE(t))
-        case PlusExpLE(t,e) => PlusExp(fromTermLE(t), fromExpLE(e))
-    }
 
     /* 
     parse tree with left recursion

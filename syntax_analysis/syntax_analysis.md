@@ -84,6 +84,27 @@ test("test_lex") {
 
 In this cohort problem we are going to focus on Top-down parsing.
 
+### Abstract Syntax Ttree 
+To implement top-down parsing, we first consider how to represent a parse tree in Scala. 
+It's natural to implement the parse trees in terms of some algebraic datatype. 
+The Grammar 4 can be encoded with the following Scala enum type.
+
+```scala
+enum Exp {
+    case TermExp(t:Term)
+    case PlusExp(t:Term, e:Exp)
+}
+
+enum Term {
+    case FactorTerm(f:Factor)
+    case MultTerm(t:Term, f:Factor)
+}
+
+case class Factor(v:Int)
+```
+
+### Left Recursion Elimination
+
 Recall Grammar 4 defined above contains some left recursion. 
 
 To eliminate the left recursion, we apply the same trick by rewriting left recursive grammar rules
@@ -125,46 +146,24 @@ F  ::=i
 
 None of the production rules above contains common leading terminal symbols, hence there is no need to apply left-factorization.
 
-What we have seen in the running example in the lecture is a top-down recursive parsing algorithm. 
+Note that in the above Grammar 4 with left recursion eliminated, the only rules affected are thos with non-terminal `T`,
 
-To implement it, we first consider how to represent a parse tree in Scala. As we observe from the example, every parse tree should follow the structure of the grammar of the language. 
+Hence we only need to added the following enum type
 
-It's natural to implement the parse trees in terms of some algebraic datatype. 
-
-### Abstract Syntax Tree
-
-Recall the above grammar is the same as 
-
-```
-E  ::= T + E | T
-T  ::= FT'
-T' ::= *FT' | epsilon
-F  ::=i
-```
+### Additional Abstract Syntax Tree
 
 
 We could model it using Algebraic data type.
-
 ```scala
-enum ExpLE {
-    case TermExpLE(t:TermLE)
-    case PlusExpLE(t:TermLE, e:ExpLE) 
-}
-
 case class TermLE(f:Factor, tp:TermLEP)
 
 enum TermLEP {
     case MultTermLEP(f:Factor, tp:TermLEP)
     case Eps
 }
-
-case class Factor(v:Int)
 ```
 
-Each value of the algebraic datatype `ExpLE` is a parse tree of `E` encoded in Scala.
-
-For instance, given the list of lexical tokens as input,
-
+The main idea is when parsing a `Term`, instead of parsing directly, we parse a `TermLE` then convert it back to `Term`.
 
 
 ```scala
@@ -173,8 +172,12 @@ List(IntTok(1), PlusTok, IntTok(2), AsterixTok, IntTok(3))
 A parser method `parse` should generate
 
 ```scala
-PlusExpLE(TermLE(Factor(1),Eps),TermExpLE(TermLE(Factor(2),MultTermLEP(Factor(3),Eps))))
+PlusExp(FactorTerm(Factor(1)),TermExp(MultTerm(FactorTerm(Factor(2)),Factor(3))))
 ```
+where 
+
+* sub term `IntTok(1)` was first parsed as `TermLE(Factor(1), Eps)` then converted to `FactorTerm(Factor(1))`, and 
+* sub term `IntTok(2), AsterixTok, IntTok(3)` was first parsed as `TermLE(Factor(2), MultTerm(Factor(3), Eps))` and converted to `MultTerm((Factor(2), Factor(3)))`.
 
 
 
@@ -348,34 +351,59 @@ def optional[T, A](pa: Parser[T, A]): Parser[T, Either[Unit, A]] = {
 `optional` takes a parser `pa` and tries to execute it with the current input. If it fails, it restores the original state and returns `Unit`.
 
 
-Let's try to write a lexer and a parser for the simple arithmetic expression 
+Let's try to write and a parser for the simple arithmetic expression 
 
 Recall the nice property of a top-down parser is that the parser is correspondent to the top-down traversal of the production rules.
 
-Recall the grammar of Math expression with left recursion eliminated.
+Recall the grammar 4 of Math expression with left recursion.
 ```
-E  ::= T + E | T
-T  ::= FT'
-T' ::= *FT' | epsilon
-F  ::= i
+E::= T + E
+E::= T
+T::= T * F 
+T::= F
+F::= i    
 ```
 
 
 ```scala
-def parseExpLE:Parser[LToken, ExpLE] = 
-    choice(parsePlusExpLE)(parseTermExp)
+def parseExp:Parser[LToken, Exp] = 
+    choice(parsePlusExp)(parseTermExp)
 
-def parsePlusExpLE:Parser[LToken, ExpLE] = for {
+def parsePlusExp:Parser[LToken, Exp] = for {
     t <- parseTerm
     plus <- parsePlusTok
-    e <- parseExpLE
-} yield PlusExpLE(t, e)
+    e <- parseExp
+} yield PlusExp(t, e)
 
-def parseTermExp:Parser[LToken, ExpLE] = for {
+def parseTermExp:Parser[LToken, Exp] = for {
     t <- parseTerm
-} yield TermExpLE(t)
+} yield TermExp(t)
+```
 
-def parseTerm:Parser[LToken, TermLE] = for {
+Up to this point we are ok as production rules with `E` on the LHS are not left recursive.
+It gets tricky when paarsing `T` which contains left recursion. Recall the modified grammar of 
+`T` having left-recursion eliminated.
+
+```
+T  ::= FT'  
+T' ::= *FT'
+T' ::= epsilon
+```
+
+In terms of Scala enum type, we refer to them as `TermLE` and `TermLEP`.
+Hence the parser `parserTerm` has to be defined in terms of `parseTermLE`, then 
+convert the result of `TermLE` back to `Term`
+
+```scala
+def parseTerm:Parser[LToken, Term] = for {
+    tle <- parseTermLE
+} yield fromTermLE(tle)
+```
+
+Where `parseTermLE` can be implemented using parsec, 
+
+```scala
+def parseTermLE:Parser[LToken, TermLE] = for {
     f <- parseFactor
     tp <- parseTermP 
 } yield TermLE(f, tp)
@@ -383,8 +411,8 @@ def parseTerm:Parser[LToken, TermLE] = for {
 def parseTermP:Parser[LToken, TermLEP] = for {
     omt <- optional(parseMultTermP)
 } yield { omt match {
-    case Right(_) => Eps
-    case Left(t) => t
+    case Left(_) => Eps
+    case Right(t) => t
 }}
     
 
@@ -394,13 +422,13 @@ def parseMultTermP:Parser[LToken, TermLEP] = for {
     tp <- parseTermP
 } yield MultTermLEP(f, tp)
 
-def parseFactor:Parser[LToken, Factor] = for {
-    i <- parseIntTok
-    f <- someOrFail(i)( itok => itok match {
-        case IntTok(v) => Some(Factor(v))
-        case _         => None
-    })("parseFactor() fail: expect to parse an integer token but it is not an integer.")
-} yield f
+    def parseFactor:Parser[LToken, Factor] = for {
+        i <- parseIntTok
+        f <- someOrFail(i)( itok => itok match {
+            case IntTok(v) => Some(Factor(v))
+            case _         => None
+        })("parseFactor() fail: expect to parse an integer token but it is not an integer.")
+    } yield f
 
 def parsePlusTok:Parser[LToken, LToken] = sat ((x:LToken) => x match {
     case PlusTok => true
@@ -419,18 +447,56 @@ def parseIntTok:Parser[LToken, LToken] = sat ((x:LToken) => x match {
 })
 ```
 
+Finally the `TermLE` to `Term` conversion is an inversed in order traversal, as the parse tree of `TermLE`
+
+```
+      Tp
+     / \
+     f  Tp
+       / \
+       f  Tp
+          / \
+          f  eps
+```
+
+and the parse tree of `Term` is
+
+```
+        T
+       / \
+      T   f
+     / \
+     f  f 
+```
+
+The implementation can be found as follows,
+
+```scala
+def fromTermLE(t:TermLE):Term = t match {
+    case TermLE(f, tep) => fromTermLEP(FactorTerm(f))(tep)
+} 
+def fromTermLEP(t1:Term)(tp1:TermLEP):Term = tp1 match {
+    case Eps => t1 
+    case MultTermLEP(f2, tp2) => {
+        val t2 = MultTerm(t1, f2)
+        fromTermLEP(t2)(tp2)
+    }
+}
+```
+
 And here is some test cases
 
 ```scala
 test("test_parse") {
     // val s = "1+2*3"
     val toks = List(IntTok(1), PlusTok, IntTok(2), AsterixTok, IntTok(3))
-    val result = BacktrackParsec.run(parseExpLE)(toks)
-    val expected = PlusExpLE(TermLE(Factor(1),Eps),TermExpLE(TermLE(Factor(2),MultTermLEP(Factor(3),Eps))))
+    val result = BacktrackParsec.run(parseExp)(toks)
+    val expected = PlusExp(FactorTerm(Factor(1)),TermExp(MultTerm(FactorTerm(Factor(2)),Factor(3))))
     result match {
         case Ok((t, Nil)) =>  assert(t == expected)
         case _ => assert(false)
     }
+}
 ```
 
 
