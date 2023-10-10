@@ -318,15 +318,17 @@ def item[T]: Parser[T, T] =
         }
     })
 
-def sat[T](p: T => Boolean): Parser[T, T] = Parser(toks =>
+def sat[T](p: T => Boolean, err:String=""): Parser[T, T] = Parser(toks =>
     toks match {
-        case Nil => Failed("sat() is called with an empty token stream.")
+        case Nil => Failed(s"sat() is called with an empty token stream. ${err}")
         case (c :: cs) if p(c) => Ok((c, cs))
         case (c :: cs) =>
-            Failed("sat() is called with a unsatisfied predicate.")
+            Failed(s"sat() is called with a unsatisfied predicate with ${c}. ${err}")
     }
 )
 ```
+In the `sat` combinator, we pass in two arguments, the predicate `p` and an optional `err` error parameter, which is default to empty string.
+
 
 More importantly, we could define more generic and useful combinators
 
@@ -433,18 +435,18 @@ def parseMultTermP:Parser[LToken, TermLEP] = for {
 def parsePlusTok:Parser[LToken, LToken] = sat ((x:LToken) => x match {
     case PlusTok => true
     case _       => false
-})
+}, "Expecting a + symbol")
 
 
 def parseAsterixTok:Parser[LToken, LToken] = sat ((x:LToken) => x match {
     case AsterixTok => true
     case _          => false
-})
+}, "Expecting a * symbol")
 
 def parseIntTok:Parser[LToken, LToken] = sat ((x:LToken) => x match {
     case IntTok(v) => true
     case _         => false
-})
+}, "Expecting an int token")
 ```
 
 Finally the `TermLE` to `Term` conversion is an inversed in order traversal, as the parse tree of `TermLE`
@@ -520,6 +522,53 @@ There is some skeleton code given in the project stub. Your task is to complete 
 Implement a parser of JSON. Is the grammar suitable for top-down parsing? 
 There is some skeleton code given in the project stub. Your task is to 
 complete the missing parts and make sure it pass the test cases.
+
+```scala
+test("test_json_empty_list_parse") {
+    val input = List(LBracket, RBracket)
+    val result = BacktrackParsec.run(parseJList)(input)
+    val expected = JsonList(Nil) 
+    result match {
+        case Ok((t, Nil)) =>  assert(t == expected)
+        case rest => {
+            println(rest)
+            assert(false)
+        }
+    }
+}
+
+test("test_json_list_parse") {
+    val input = List(LBracket, IntTok(1), Comma, IntTok(2), RBracket)
+    val result = BacktrackParsec.run(parseJList)(input)
+    val expected = JsonList(List(IntLit(1),IntLit(2))) 
+    result match {
+        case Ok((t, Nil)) =>  assert(t == expected)
+        case rest => {
+            println(rest)
+            assert(false)
+        }
+    }
+}
+    
+test("test_json_parse") {
+    // {'k1':1,'k2':[]}
+    val input = List(LBrace,SQuote,StrTok("k1"),SQuote,Colon,IntTok(1),Comma,SQuote,StrTok("k2"),SQuote,Colon,LBracket, RBracket,RBrace)
+    val result = BacktrackParsec.run(parseJSON)(input)
+    val expected = JsonObject(
+        Map(
+            "k1" -> IntLit(1),
+            "k2" -> JsonList(Nil)
+    ))
+    result match {
+        case Ok((t, Nil))  =>  assert(t == expected)
+        case rest => {
+            println(rest)
+            assert(false)
+        }
+    }
+}
+
+```
 
 
 ## Exercise 3

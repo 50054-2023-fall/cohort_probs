@@ -46,9 +46,12 @@ object JsonParser {
     
     def parseJList:Parser[LToken, Json] = for {
         _ <- parseLBracket
-        js <- interleave(parseJSON)(parseComma)
+        ojs <- optional(interleave(parseJSON)(parseComma))
         _ <- parseRBraacket
-    } yield JsonList(js)
+    } yield JsonList( ojs match {
+        case Right(js) => js
+        case Left(_) => Nil
+    } )
 
     // Exericse 2 - complete the following parser
     def parseJObj:Parser[LToken, Json] = 

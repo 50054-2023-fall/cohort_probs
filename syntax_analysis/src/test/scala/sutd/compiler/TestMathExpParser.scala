@@ -17,7 +17,7 @@ class TestMathExpParser extends funsuite.AnyFunSuite {
     import Factor.*
     import TermLEP.*
     
-    test("test_parse") {
+    test("test_mathexp_parse") {
         // val s = "1+2*3"
         val toks = List(IntTok(1), PlusTok, IntTok(2), AsterixTok, IntTok(3))
         val result = BacktrackParsec.run(parseExp)(toks)

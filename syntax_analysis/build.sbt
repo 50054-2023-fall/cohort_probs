@@ -2,7 +2,7 @@ name := "syntax-analysis-example"
 
 version := "0.0.1"
 
-scalaVersion := "3.1.2"
+scalaVersion := "3.3.0"
 
 
 resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"

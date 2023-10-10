@@ -143,13 +143,13 @@ object Parsec {
             }
         })
 
-    def sat[T](p: T => Boolean): Parser[T, T] = Parser(
+    def sat[T](p: T => Boolean, err:String=""): Parser[T, T] = Parser(
       toks => {
           toks match {
               case Nil =>
                   Empty(
                     Failed(
-                      s"sat() is called with an empty token stream."
+                      s"sat() is called with an empty token stream. ${err}"
                     )
                   )
               case (c :: cs) if p(c) =>
@@ -157,7 +157,7 @@ object Parsec {
               case (c :: cs) =>
                   Empty(
                     Failed(
-                      s"sat() is called with a unsatisfied predicate."
+                      s"sat() is called with a unsatisfied predicate with ${c}. ${err}"
                     )
                   )
 
