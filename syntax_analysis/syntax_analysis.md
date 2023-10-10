@@ -38,14 +38,14 @@ enum LToken { // lexical Tokens
 Following the same idea mentioned in the lecture note, we make use of the Scala regex library to implement a lexer.
 
 ```scala
-def lex(src:String):Either[List[LToken], Error] = {
-    def go(src:String, acc:List[LToken]):Either[List[LToken], Error] = {
+def lex(src:String):Either[Error, List[LToken]] = {
+    def go(src:String, acc:List[LToken]):Either[Error, List[LToken]] = {
         if (src.length == 0)  {
-            Left(acc)
+            Right(acc)
         } else {
             lex_one(src) match {
-                case Right(error) => Right(error)
-                case Left((ltoken, rest)) => go(rest, acc++List(ltoken))
+                case Left(error) => Left(error)
+                case Right((ltoken, rest)) => go(rest, acc++List(ltoken))
             }
         }
     }
@@ -57,11 +57,11 @@ val plus = raw"(\+)(.*)".r
 val asterix = raw"(\*)(.*)".r
 
 import LToken.*
-def lex_one(src:String):Either[(LToken, String), Error] = src match {
-    case integer(s, rest) => Left((IntTok(s.toInt), rest))
-    case plus(_, rest) => Left((PlusTok, rest))
-    case asterix(_, rest) => Left((AsterixTok, rest))
-    case _ => Right(s"lexer error: unexpected token at ${src}")
+def lex_one(src:String):Either[Error, (LToken, String)] = src match {
+    case integer(s, rest) => Right((IntTok(s.toInt), rest))
+    case plus(_, rest) => Right((PlusTok, rest))
+    case asterix(_, rest) => Right((AsterixTok, rest))
+    case _ => Left(s"lexer error: unexpected token at ${src}")
 }
 ```
 
@@ -72,7 +72,7 @@ test("test_lex") {
     val s = "1+2*3"
     val result = lex(s)
     assert(
-        result == Left(
+        result == Right(
         List(IntTok(1), PlusTok, IntTok(2), AsterixTok, IntTok(3))
         )
     )
@@ -381,7 +381,7 @@ def parseTermExp:Parser[LToken, Exp] = for {
 ```
 
 Up to this point we are ok as production rules with `E` on the LHS are not left recursive.
-It gets tricky when paarsing `T` which contains left recursion. Recall the modified grammar of 
+It gets tricky when parsing `T` which contains left recursion. Recall the modified grammar of 
 `T` having left-recursion eliminated.
 
 ```
@@ -422,13 +422,13 @@ def parseMultTermP:Parser[LToken, TermLEP] = for {
     tp <- parseTermP
 } yield MultTermLEP(f, tp)
 
-    def parseFactor:Parser[LToken, Factor] = for {
-        i <- parseIntTok
-        f <- someOrFail(i)( itok => itok match {
-            case IntTok(v) => Some(Factor(v))
-            case _         => None
-        })("parseFactor() fail: expect to parse an integer token but it is not an integer.")
-    } yield f
+def parseFactor:Parser[LToken, Factor] = for {
+    i <- parseIntTok
+    f <- someOrFail(i)( itok => itok match {
+        case IntTok(v) => Some(Factor(v))
+        case _         => None
+    })("parseFactor() fail: expect to parse an integer token but it is not an integer.")
+} yield f
 
 def parsePlusTok:Parser[LToken, LToken] = sat ((x:LToken) => x match {
     case PlusTok => true

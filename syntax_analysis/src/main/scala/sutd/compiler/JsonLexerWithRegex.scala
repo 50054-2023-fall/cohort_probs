@@ -7,17 +7,17 @@ object JsonLexerWithRegex {
 
     type Error = String
 
-    def lex(src:String):Either[List[LToken], Error] = {
-        def go(src:String, acc:List[LToken]):Either[List[LToken], Error] = {
+    def lex(src:String):Either[Error, List[LToken]] = {
+        def go(src:String, acc:List[LToken]):Either[Error, List[LToken]] = {
             if (src.length == 0)  
             {
-                Left(acc)
+                Right(acc)
             } 
             else 
             {
                 lex_one(src) match {
-                    case Right(error) => Right(error)
-                    case Left((ltoken, rest)) => go(rest, acc++List(ltoken))
+                    case Left(error) => Left(error)
+                    case Right((ltoken, rest)) => go(rest, acc++List(ltoken))
                 }
             }
         }
@@ -35,10 +35,10 @@ object JsonLexerWithRegex {
     val comma = raw"(,)(.*)".r
 
     import LToken.*
-    def lex_one(src:String):Either[(LToken, String), Error] = src match {
+    def lex_one(src:String):Either[Error, (LToken, String)] = src match {
         // TODO: Exercise 1
         // more cases here.
-        case _ => Right(s"lexer error: unexpected token at ${src}")
+        case _ => Left(s"lexer error: unexpected token at ${src}")
     }
 
     val jsonstr = "{'k1':1,'k2':[]}"

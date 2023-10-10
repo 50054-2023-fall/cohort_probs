@@ -12,7 +12,7 @@ class TestMathExpLexer extends funsuite.AnyFunSuite {
         val s = "1+2*3"
         val result = lex(s)
         assert(
-          result == Left(
+          result == Right(
             List(IntTok(1), PlusTok, IntTok(2), AsterixTok, IntTok(3))
           )
         )
