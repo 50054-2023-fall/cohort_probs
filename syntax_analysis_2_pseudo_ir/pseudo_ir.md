@@ -319,7 +319,7 @@ $$
           G_s(S_3) \vdash lis_3 \\ 
           l_{EndElse}\ {\tt is\ a\ fresh\ label} \\
           l_{EndIf}\ {\tt is\ the\ next\ label\ (w/o\ incr)} \\ 
-          lis_1 = [l_{IfCondJ}: ifn\ \v{e}\ goto\ l_{Else} ] \\ 
+          lis_1 = [l_{IfCondJ}: ifn\ \^{e}\ goto\ l_{Else} ] \\ 
           lis_2' = lis_2 + [l_{EndThen}:goto\ l_{EndIf}] \\ 
           lis_3' = lis_3 + [l_{EndElse}:goto\ l_{EndIf}] \\ 
           \hline  
@@ -338,10 +338,10 @@ $$
           G_s(S) \vdash lis_2\\ 
           l_{EndBody}\ {\tt is\ a\ fresh\ label} \\  
           l_{EndWhile}\ {\tt is\ the\ next\ label\ (w/o\ incr)} \\ 
-          lis_1 = [l_{WhileCondJ}: ifn\ \v{e}\ goto\ l_{EndWhile}] \\
+          lis_1 = [l_{WhileCondJ}: ifn\ \^{e}\ goto\ l_{EndWhile}] \\
           lis_2' = lis_2 + [ l_{EndBody}: goto\ l_{While} ] \\
           \hline
-          G_s(while\ E\ \{S\}) \vdash  \^{e} + lis_1 + lis_2'           
+          G_s(while\ E\ \{S\}) \vdash  \v{e} + lis_1 + lis_2'           
           \end{array} 
 \end{array}
 $$
@@ -367,12 +367,12 @@ $$
 $$
 \begin{array}{rc}
 {\tt (m2Op)} & \begin{array}{c} 
-          G_e(E_1) \vdash (\^{e_1}, \v{e_1}) \\ 
-          G_e(E_2) \vdash (\^{e_2}, \v{e_2}) \\ 
+          G_e(E_1) \vdash (\^{e}_1, \v{e}_1) \\ 
+          G_e(E_2) \vdash (\^{e}_2, \v{e}_2) \\ 
           t \ {\tt is\ a\ fresh\ variable.} \\ 
           l \ {\tt is\ a\ fresh\ label.} \\ 
           \hline
-          G_e(E_1 OP E_2) \vdash (t, \v{e_1} + \v{e_2} + [l : t \leftarrow \^{e_1} OP \v{e_2}] 
+          G_e(E_1 OP E_2) \vdash (t, \v{e}_1 + \v{e}_2 + [l : t \leftarrow \^{e}_1 OP \^{e}_2]) 
           \end{array} \\ 
 \end{array}  
 $$
