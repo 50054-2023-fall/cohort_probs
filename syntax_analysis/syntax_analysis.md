@@ -202,11 +202,14 @@ We define a variant of the `Option` datatype, `Result` which is either a failure
 Apply the same idea we could define a conditional parsing function.
 
 ```scala
-def sat(toks:List[LToken])(p:LToken => Boolean):Result[(LToken, List[Token])] = toks match {
-  case Nil => Failed("sat() is called with an empty input")
-  case (t::ts) if p(t) => Ok((t, ts))
-  case (t::ts)         => Failed("sat() is called with an input that does not satisfy the input predicate.")
-}
+def sat[T](p: T => Boolean, err:String=""): Parser[T, T] = Parser(toks =>
+    toks match {
+        case Nil => Failed(s"sat() is called with an empty token stream. ${err}")
+        case (c :: cs) if p(c) => Ok((c, cs))
+        case (c :: cs) =>
+            Failed(s"sat() is called with a unsatisfied predicate with ${c}. ${err}")
+    }
+)
 ```
 
 We may want to combine these basic parsing functions to form a larger parsing task, e.g.
@@ -218,7 +221,7 @@ def aBitMoreComplexParser(toks:List[LToken]):Result[(LToken,List[LToken])] =
     case Ok((_, toks2)) => sat(toks2)(t => t match {
       case AsterixTok => true
       case _          => false
-    })
+    }, "Expecting an asterix." )
   }
 ```
 
