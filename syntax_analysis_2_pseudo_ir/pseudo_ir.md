@@ -12,15 +12,12 @@ Recall
 
 $$
 \begin{array}{rccl}
-(\tt Labeled\ Instruction) & li  & ::= & l : i \\ 
-(\tt Instruction)   & i   & ::= & d \leftarrow s \mid d \leftarrow s\ op\ s \mid ret \mid ifn\ s\ goto\ l \mid goto\ l \\ 
-(\tt Labeled\ Instructions)   & lis   & ::= & li \mid li\ lis \\ 
-(\tt Operand)       & d,s & ::= & r \mid c \mid t \\
-(\tt Temp\ Var)      & t   & ::= & x \mid y \mid ...  \\
-(\tt Label)         & l   & ::= & 1 \mid 2 \mid ... \\
-(\tt Operator)      & op  & ::= & + \mid - \mid < \mid > \mid == \mid ... \\ 
-(\tt Constant)      & c   & ::= & 0 \mid 1 \mid 2 \mid ... \mid true \mid false \\ 
-{\tt Register}      & r &   ::= & r_{ret} \mid r_1 \mid r_2 \mid ...  
+(\tt Statement) & S & ::= & X = E ; \mid return\ X ; \mid nop; \mid if\ E\ \{ \overline{S} \}\ else\ \{ \overline{S} \} \mid while\ E\ \{ \overline{S} \} \\
+(\tt Expression) & E & ::= & E\ OP\ E \mid X \mid C  \mid (E) \\
+(\tt Statements) & \overline{S} & ::= & S \mid S\ \overline{S} \\
+(\tt Operator) & OP & ::= & + \mid - \mid * \mid <  \mid == \\ 
+(\tt Constant) & C & ::= & 0 \mid 1 \mid 2 \mid ... \mid true \mid false \\ 
+(\tt Variable) & X & ::= & a \mid b \mid c \mid d \mid ...
 \end{array}
 $$
 
@@ -35,13 +32,13 @@ $$
 (\tt Operand)       & d,s & ::= & r \mid c \mid t \\
 (\tt Temp\ Var)      & t   & ::= & x \mid y \mid ...  \\
 (\tt Label)         & l   & ::= & 1 \mid 2 \mid ... \\
-(\tt Operator)      & op  & ::= & + \mid - \mid < \mid > \mid == \mid ... \\ 
+(\tt Operator)      & op  & ::= & + \mid - \mid * \mid < \mid == \\ 
 (\tt Constant)      & c   & ::= & 0 \mid 1 \mid 2 \mid ... \\ 
 (\tt Register)      & r &   ::= & r_{ret} \mid r_1 \mid r_2 \mid ...  
 \end{array}
 $$
 
-In Psuedo Assembly, we use `0` to denote `false` and any `1` constant to denote `true`.
+In Pseudo Assembly, we use `0` to denote `false` and any `1` constant to denote `true`.
 
 ## Maximal Munch Algorithm
 
