@@ -208,6 +208,3 @@ Here are the tasks
 1. You should be able to test your code using `sbt test`
 
 
-# Exercise 4 (Optional)
-
-Can you implement the small step operational semantics? 
