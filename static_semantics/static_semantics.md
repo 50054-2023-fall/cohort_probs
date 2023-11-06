@@ -26,7 +26,34 @@ return s;
 
 # Exercise 2
 
-Recall the syntax and typing rules for Simply typed lambda calculus from the notes. 
+We extend the syntax and typing rules for Simply typed lambda calculus from the notes with `<`
+
+$$
+\begin{array}{rccl}
+ {\tt (Lambda\ Terms)} & t & ::= & x \mid \lambda x:T.t \mid t\ t \mid let\ x:T =\ t\ in\ t \mid  if\ t\ then\ t\ else\ t \mid t\ op\ t \mid c \mid fix\ t \\
+ {\tt (Builtin\ Operators)} & op & ::= & + \mid - \mid * \mid / \mid\ == \mid < \\
+ {\tt (Builtin\ Constants)} & c & ::= & 0 \mid 1 \mid ... \mid true \mid false \\
+ {\tt (Types)} & T & ::= & int \mid bool \mid T \rightarrow T \\ 
+ {\tt (Type\ Environments)} & \Gamma & \subseteq & (x \times T)
+\end{array}
+$$
+
+And we extended the $(lctOp2)$ and $(lctOp3)$ rules as follows
+
+$$
+\begin{array}{cc}
+{\tt (lctOp2)} & \begin{array}{c}
+               \Gamma \vdash t_1 : int \ \ \ \Gamma \vdash t_2 : int \ op \in \{<, ==\}\\
+               \hline
+               \Gamma \vdash  t_1\ op t_2 : bool 
+               \end{array} \\ \\ 
+{\tt (lctOp3)} & \begin{array}{c}
+               \Gamma \vdash t_1 : bool \ \ \ \Gamma \vdash t_2 : bool\ op \in \{<, ==\} \\
+               \hline
+               \Gamma \vdash  t_1\ op t_2 : bool 
+               \end{array} \\ \\ 
+\end{array}
+$$
 
 ```haskell
 fix \g:int->int->int.\x:int.\y:int.if x < y then g x (y-x) else (if x == y then x else g (x-y) y)
