@@ -29,7 +29,7 @@ return s;
 Recall the syntax and typing rules for Simply typed lambda calculus from the notes. 
 
 ```haskell
-fix \f:int->int.\x:int. if x == 0 then 1 else x * (f (x-1))
+fix \g:int->int->int.\x:int.\y:int.if x < y then g x (y-x) else (if x == y then x else g (x-y) y)
 ```
 
 For simplicity, we write `\x:T.e` to denote $\lambda x:T.e$.
