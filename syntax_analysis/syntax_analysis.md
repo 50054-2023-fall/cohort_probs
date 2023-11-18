@@ -38,14 +38,14 @@ enum LToken { // lexical Tokens
 Following the same idea mentioned in the lecture note, we make use of the Scala regex library to implement a lexer.
 
 ```scala
-def lex(src:String):Either[Error, List[LToken]] = {
-    def go(src:String, acc:List[LToken]):Either[Error, List[LToken]] = {
+def lex(src:String):Either[List[LToken], Error] = {
+    def go(src:String, acc:List[LToken]):Either[List[LToken], Error] = {
         if (src.length == 0)  {
-            Right(acc)
+            Left(acc)
         } else {
             lex_one(src) match {
-                case Left(error) => Left(error)
-                case Right((ltoken, rest)) => go(rest, acc++List(ltoken))
+                case Right(error) => Right(error)
+                case Left((ltoken, rest)) => go(rest, acc++List(ltoken))
             }
         }
     }
@@ -57,11 +57,11 @@ val plus = raw"(\+)(.*)".r
 val asterix = raw"(\*)(.*)".r
 
 import LToken.*
-def lex_one(src:String):Either[Error, (LToken, String)] = src match {
-    case integer(s, rest) => Right((IntTok(s.toInt), rest))
-    case plus(_, rest) => Right((PlusTok, rest))
-    case asterix(_, rest) => Right((AsterixTok, rest))
-    case _ => Left(s"lexer error: unexpected token at ${src}")
+def lex_one(src:String):Either[(LToken, String), Error] = src match {
+    case integer(s, rest) => Left((IntTok(s.toInt), rest))
+    case plus(_, rest) => Left((PlusTok, rest))
+    case asterix(_, rest) => Left((AsterixTok, rest))
+    case _ => Right(s"lexer error: unexpected token at ${src}")
 }
 ```
 
@@ -72,7 +72,7 @@ test("test_lex") {
     val s = "1+2*3"
     val result = lex(s)
     assert(
-        result == Right(
+        result == Left(
         List(IntTok(1), PlusTok, IntTok(2), AsterixTok, IntTok(3))
         )
     )
@@ -218,7 +218,7 @@ def aBitMoreComplexParser(toks:List[LToken]):Result[(LToken,List[LToken])] =
     case Ok((_, toks2)) => sat(toks2)(t => t match {
       case AsterixTok => true
       case _          => false
-    })
+    }, "Expecting an asterix." )
   }
 ```
 
@@ -383,7 +383,7 @@ def parseTermExp:Parser[LToken, Exp] = for {
 ```
 
 Up to this point we are ok as production rules with `E` on the LHS are not left recursive.
-It gets tricky when parsing `T` which contains left recursion. Recall the modified grammar of 
+It gets tricky when paarsing `T` which contains left recursion. Recall the modified grammar of 
 `T` having left-recursion eliminated.
 
 ```
@@ -417,7 +417,6 @@ def parseTermP:Parser[LToken, TermLEP] = for {
     case Right(t) => t
 }}
     
-
 def parseMultTermP:Parser[LToken, TermLEP] = for {
     asterix <- parseAsterixTok
     f <- parseFactor
@@ -452,23 +451,27 @@ def parseIntTok:Parser[LToken, LToken] = sat ((x:LToken) => x match {
 Finally the `TermLE` to `Term` conversion is an inversed in order traversal, as the parse tree of `TermLE`
 
 ```
-      Tp
-     / \
-     f  Tp
-       / \
-       f  Tp
-          / \
-          f  eps
+    T
+   / \
+  f   T'
+     /|\
+    * f T'
+       /|\
+      * f T'
+          |
+         eps
 ```
 
 and the parse tree of `Term` is
 
 ```
         T
-       / \
-      T   f
-     / \
-     f  f 
+       /|\
+      T * f
+     /| \
+    T * f 
+    |
+    f
 ```
 
 The implementation can be found as follows,

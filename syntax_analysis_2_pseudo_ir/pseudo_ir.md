@@ -12,15 +12,12 @@ Recall
 
 $$
 \begin{array}{rccl}
-(\tt Labeled\ Instruction) & li  & ::= & l : i \\ 
-(\tt Instruction)   & i   & ::= & d \leftarrow s \mid d \leftarrow s\ op\ s \mid ret \mid ifn\ s\ goto\ l \mid goto\ l \\ 
-(\tt Labeled\ Instructions)   & lis   & ::= & li \mid li\ lis \\ 
-(\tt Operand)       & d,s & ::= & r \mid c \mid t \\
-(\tt Temp\ Var)      & t   & ::= & x \mid y \mid ...  \\
-(\tt Label)         & l   & ::= & 1 \mid 2 \mid ... \\
-(\tt Operator)      & op  & ::= & + \mid - \mid < \mid > \mid == \mid ... \\ 
-(\tt Constant)      & c   & ::= & 0 \mid 1 \mid 2 \mid ... \mid true \mid false \\ 
-{\tt Register}      & r &   ::= & r_{ret} \mid r_1 \mid r_2 \mid ...  
+(\tt Statement) & S & ::= & X = E ; \mid return\ X ; \mid nop; \mid if\ E\ \{ \overline{S} \}\ else\ \{ \overline{S} \} \mid while\ E\ \{ \overline{S} \} \\
+(\tt Expression) & E & ::= & E\ OP\ E \mid X \mid C  \mid (E) \\
+(\tt Statements) & \overline{S} & ::= & S \mid S\ \overline{S} \\
+(\tt Operator) & OP & ::= & + \mid - \mid * \mid <  \mid == \\ 
+(\tt Constant) & C & ::= & 0 \mid 1 \mid 2 \mid ... \mid true \mid false \\ 
+(\tt Variable) & X & ::= & a \mid b \mid c \mid d \mid ...
 \end{array}
 $$
 
@@ -35,13 +32,13 @@ $$
 (\tt Operand)       & d,s & ::= & r \mid c \mid t \\
 (\tt Temp\ Var)      & t   & ::= & x \mid y \mid ...  \\
 (\tt Label)         & l   & ::= & 1 \mid 2 \mid ... \\
-(\tt Operator)      & op  & ::= & + \mid - \mid < \mid > \mid == \mid ... \\ 
+(\tt Operator)      & op  & ::= & + \mid - \mid * \mid < \mid == \\ 
 (\tt Constant)      & c   & ::= & 0 \mid 1 \mid 2 \mid ... \\ 
 (\tt Register)      & r &   ::= & r_{ret} \mid r_1 \mid r_2 \mid ...  
 \end{array}
 $$
 
-In Psuedo Assembly, we use `0` to denote `false` and any `1` constant to denote `true`.
+In Pseudo Assembly, we use `0` to denote `false` and any `1` constant to denote `true`.
 
 ## Maximal Munch Algorithm
 
@@ -319,7 +316,7 @@ $$
           G_s(S_3) \vdash lis_3 \\ 
           l_{EndElse}\ {\tt is\ a\ fresh\ label} \\
           l_{EndIf}\ {\tt is\ the\ next\ label\ (w/o\ incr)} \\ 
-          lis_1 = [l_{IfCondJ}: ifn\ \v{e}\ goto\ l_{Else} ] \\ 
+          lis_1 = [l_{IfCondJ}: ifn\ \^{e}\ goto\ l_{Else} ] \\ 
           lis_2' = lis_2 + [l_{EndThen}:goto\ l_{EndIf}] \\ 
           lis_3' = lis_3 + [l_{EndElse}:goto\ l_{EndIf}] \\ 
           \hline  
@@ -338,10 +335,10 @@ $$
           G_s(S) \vdash lis_2\\ 
           l_{EndBody}\ {\tt is\ a\ fresh\ label} \\  
           l_{EndWhile}\ {\tt is\ the\ next\ label\ (w/o\ incr)} \\ 
-          lis_1 = [l_{WhileCondJ}: ifn\ \v{e}\ goto\ l_{EndWhile}] \\
+          lis_1 = [l_{WhileCondJ}: ifn\ \^{e}\ goto\ l_{EndWhile}] \\
           lis_2' = lis_2 + [ l_{EndBody}: goto\ l_{While} ] \\
           \hline
-          G_s(while\ E\ \{S\}) \vdash  \^{e} + lis_1 + lis_2'           
+          G_s(while\ E\ \{S\}) \vdash  \v{e} + lis_1 + lis_2'           
           \end{array} 
 \end{array}
 $$
@@ -367,12 +364,12 @@ $$
 $$
 \begin{array}{rc}
 {\tt (m2Op)} & \begin{array}{c} 
-          G_e(E_1) \vdash (\^{e_1}, \v{e_1}) \\ 
-          G_e(E_2) \vdash (\^{e_2}, \v{e_2}) \\ 
+          G_e(E_1) \vdash (\^{e}_1, \v{e}_1) \\ 
+          G_e(E_2) \vdash (\^{e}_2, \v{e}_2) \\ 
           t \ {\tt is\ a\ fresh\ variable.} \\ 
           l \ {\tt is\ a\ fresh\ label.} \\ 
           \hline
-          G_e(E_1 OP E_2) \vdash (t, \v{e_1} + \v{e_2} + [l : t \leftarrow \^{e_1} OP \v{e_2}] 
+          G_e(E_1 OP E_2) \vdash (t, \v{e}_1 + \v{e}_2 + [l : t \leftarrow \^{e}_1 OP \^{e}_2]) 
           \end{array} \\ 
 \end{array}  
 $$
