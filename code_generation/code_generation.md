@@ -26,7 +26,7 @@ Consider the following PA SSA code.
 8: f3 <- s2
 9: s3 <- t3 + f3
 10: c3 <- c2 + 1
-11: goto 6
+11: goto 5
 12: r_ret <- s2
 13: ret
 ```
